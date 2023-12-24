@@ -70,7 +70,7 @@ fn generate_player(
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let atlas_handle = texture_atlases.add(texture_atlas.clone());
-    let animation_indices = AnimationIndices { first: 0, last: 3 };
+    let animation_indices = AnimationIndices { first: 0, second: 2, third: 1, last: 3 };
 
     commands.spawn((
         SpriteSheetBundle {
@@ -80,7 +80,7 @@ fn generate_player(
                 custom_size: Some(Vec2::new(SPRITE_SIZE, SPRITE_SIZE)),
                 ..default()
             },
-            transform: Transform::from_xyz(0.0, 0.0, 3.0),
+            transform: Transform::from_xyz(-400.0, 0.0, 3.0),
             ..default()
         },
         Player,
@@ -98,7 +98,20 @@ fn move_player(mut query: Query<&mut Transform, With<Player>>) {
 #[derive(Component)]
 struct AnimationIndices {
     first: usize,
+    second: usize,
+    third: usize,
     last: usize,
+}
+
+impl AnimationIndices {
+    fn next(&self, index: usize) -> usize {
+        match index {
+            i if i == self.first => self.second,
+            i if i == self.second => self.third,
+            i if i == self.third => self.last,
+            _ => self.first,
+        }
+    }
 }
 
 #[derive(Component, Deref, DerefMut)]
@@ -108,18 +121,20 @@ fn animate_player(
     time: Res<Time>,
     mut query: Query<(
         &AnimationIndices,
+        &mut Transform,
         &mut AnimationTimer,
         &mut TextureAtlasSprite,
     )>,
 ) {
-    for (indices, mut timer, mut sprite) in &mut query {
+    for (indices, mut transform, mut timer, mut sprite) in &mut query {
         timer.tick(time.delta());
         if timer.just_finished() {
-            sprite.index = if sprite.index == indices.last {
-                indices.first
-            } else {
-                sprite.index + 1
-            };
+            sprite.index = indices.next(sprite.index);
+            let mut move_amount = 5.0;
+            if sprite.index == indices.last {
+                move_amount = move_amount * -3.0;
+            }
+            transform.translation.y += move_amount;
         }
     }
 }
