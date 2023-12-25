@@ -1,8 +1,8 @@
 mod animation;
-mod player;
+pub mod player;
 
 use crate::constants::*;
-use bevy::{asset::LoadedFolder, prelude::*};
+use bevy::{asset::LoadedFolder, prelude::*, sprite::Anchor};
 
 pub struct PlayerPlugin;
 
@@ -83,10 +83,11 @@ fn generate_player(
             texture_atlas: atlas_handle,
             sprite: TextureAtlasSprite {
                 index: animation_indices.last,
+                anchor: Anchor::BottomLeft,
                 custom_size: Some(Vec2::new(SPRITE_SIZE, SPRITE_SIZE)),
                 ..default()
             },
-            transform: Transform::from_xyz(-400.0, 0.0, 3.0),
+            transform: Transform::from_xyz(PLAYER_OFFSET, 0.0, 3.0),
             ..default()
         },
         player::Player {
