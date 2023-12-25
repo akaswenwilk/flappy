@@ -8,3 +8,5 @@ pub const SPRITE_SIZE: f32 = 100.0;
 pub const GRAVITY: f32 = 9.8;
 pub const FLAP_FORCE: f32 = -7.0;
 pub const MAX_ROTATE: f32 = 0.1;
+pub const TOWER_SPAWN_TIME: f32 = 0.3;
+pub const TOWER_GAP: f32 = 400.0;

@@ -1,6 +1,7 @@
 mod constants;
 mod parallax;
 mod player;
+mod tower;
 
 use crate::constants::*;
 use bevy::input::common_conditions::input_toggle_active;
@@ -17,6 +18,7 @@ fn main() {
     };
 
     App::new()
+        .add_state::<GameState>()
         .add_plugins(
             DefaultPlugins
                 .set(WindowPlugin {
@@ -31,5 +33,20 @@ fn main() {
         )
         .add_plugins(parallax::CameraPlugin)
         .add_plugins(player::PlayerPlugin)
+        .add_plugins(tower::TowerPlugin)
+        .add_systems(Update, start_game)
         .run();
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, Default, States)]
+pub enum GameState {
+    #[default]
+    Stopped,
+    Started,
+}
+
+fn start_game(mut state: ResMut<NextState<GameState>>, keyboard_input: Res<Input<KeyCode>>) {
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        state.set(GameState::Started);
+    }
 }
