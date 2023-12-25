@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::player::animation;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
@@ -9,6 +10,7 @@ pub struct Player {
     pub flying: bool,
     pub falling: bool,
     pub falling_stopwatch: Stopwatch,
+    pub downward_acceleration: f32,
 }
 
 impl Default for Player {
@@ -24,6 +26,7 @@ impl Default for Player {
             falling_stopwatch: Stopwatch::new(),
             flying: false,
             falling: false,
+            downward_acceleration: GRAVITY,
         }
     }
 }

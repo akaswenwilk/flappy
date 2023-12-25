@@ -104,15 +104,21 @@ fn move_player(
 ) {
     for (mut transform, mut player) in query.iter_mut() {
         transform.translation.x += CAMERA_MOVE_SPEED;
-        if player.falling {
-            player.falling_stopwatch.tick(time.delta());
-            let fall = GRAVITY * player.falling_stopwatch.elapsed_secs().powf(2.0);
-            transform.translation.y -= fall;
-        }
+
         if input.just_pressed(KeyCode::Space) {
             player.flying = true;
             player.falling = true;
             player.falling_stopwatch.reset();
+            player.downward_acceleration = -5.0 * GRAVITY;
+        }
+        if player.falling {
+            player.falling_stopwatch.tick(time.delta());
+            let fall =
+                player.downward_acceleration * player.falling_stopwatch.elapsed_secs().powf(2.0);
+            transform.translation.y -= fall;
+            if player.downward_acceleration < GRAVITY {
+                player.downward_acceleration += GRAVITY * player.falling_stopwatch.elapsed_secs().powf(2.0);
+            }
         }
     }
 }
