@@ -1,3 +1,6 @@
+mod animation;
+mod player;
+
 use crate::constants::*;
 use bevy::{asset::LoadedFolder, prelude::*};
 
@@ -41,9 +44,6 @@ fn check_loaded(
     }
 }
 
-#[derive(Component)]
-pub struct Player;
-
 fn generate_player(
     mut commands: Commands,
     sprites: Res<PlayerSprites>,
@@ -70,71 +70,66 @@ fn generate_player(
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let atlas_handle = texture_atlases.add(texture_atlas.clone());
-    let animation_indices = AnimationIndices { first: 0, second: 2, third: 1, last: 3 };
+    let animation_indices = animation::Indices {
+        first: 0,
+        second: 2,
+        third: 1,
+        last: 3,
+    };
+    let timer = animation::AnimationTimer::new(ANIMATION_TIMER);
 
     commands.spawn((
         SpriteSheetBundle {
             texture_atlas: atlas_handle,
             sprite: TextureAtlasSprite {
-                index: animation_indices.first,
+                index: animation_indices.last,
                 custom_size: Some(Vec2::new(SPRITE_SIZE, SPRITE_SIZE)),
                 ..default()
             },
             transform: Transform::from_xyz(-400.0, 0.0, 3.0),
             ..default()
         },
-        Player,
-        animation_indices,
-        AnimationTimer(Timer::from_seconds(ANIMATION_TIMER, TimerMode::Repeating)),
+        player::Player {
+            indices: animation_indices,
+            timer,
+            ..default()
+        },
     ));
 }
 
-fn move_player(mut query: Query<&mut Transform, With<Player>>) {
-    for mut transform in query.iter_mut() {
+fn move_player(
+    time: Res<Time>,
+    input: Res<Input<KeyCode>>,
+    mut query: Query<(&mut Transform, &mut player::Player)>,
+) {
+    for (mut transform, mut player) in query.iter_mut() {
         transform.translation.x += CAMERA_MOVE_SPEED;
-    }
-}
-
-#[derive(Component)]
-struct AnimationIndices {
-    first: usize,
-    second: usize,
-    third: usize,
-    last: usize,
-}
-
-impl AnimationIndices {
-    fn next(&self, index: usize) -> usize {
-        match index {
-            i if i == self.first => self.second,
-            i if i == self.second => self.third,
-            i if i == self.third => self.last,
-            _ => self.first,
+        if player.falling {
+            player.falling_stopwatch.tick(time.delta());
+            let fall = GRAVITY * player.falling_stopwatch.elapsed_secs().powf(2.0);
+            transform.translation.y -= fall;
+        }
+        if input.just_pressed(KeyCode::Space) {
+            player.flying = true;
+            player.falling = true;
+            player.falling_stopwatch.reset();
         }
     }
 }
 
-#[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
-
 fn animate_player(
     time: Res<Time>,
-    mut query: Query<(
-        &AnimationIndices,
-        &mut Transform,
-        &mut AnimationTimer,
-        &mut TextureAtlasSprite,
-    )>,
+    mut query: Query<(&mut player::Player, &mut TextureAtlasSprite)>,
 ) {
-    for (indices, mut transform, mut timer, mut sprite) in &mut query {
-        timer.tick(time.delta());
-        if timer.just_finished() {
-            sprite.index = indices.next(sprite.index);
-            let mut move_amount = 5.0;
-            if sprite.index == indices.last {
-                move_amount = move_amount * -3.0;
+    for (mut player, mut sprite) in &mut query {
+        if player.flying {
+            player.timer.tick(&time);
+            if player.timer.just_finished() {
+                sprite.index = player.indices.next(sprite.index);
+                if sprite.index == player.indices.last {
+                    player.flying = false;
+                }
             }
-            transform.translation.y += move_amount;
         }
     }
 }

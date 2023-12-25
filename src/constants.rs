@@ -5,3 +5,4 @@ pub const TILE_HEIGHT: f32 = 160.0;
 pub const CAMERA_MOVE_SPEED: f32 = 3.0;
 pub const ANIMATION_TIMER: f32 = 0.1;
 pub const SPRITE_SIZE: f32 = 100.0;
+pub const GRAVITY: f32 = 9.8;
