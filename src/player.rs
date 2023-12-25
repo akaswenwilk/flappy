@@ -103,22 +103,18 @@ fn move_player(
     mut query: Query<(&mut Transform, &mut player::Player)>,
 ) {
     for (mut transform, mut player) in query.iter_mut() {
-        transform.translation.x += CAMERA_MOVE_SPEED;
-
         if input.just_pressed(KeyCode::Space) {
-            player.flying = true;
-            player.falling = true;
-            player.falling_stopwatch.reset();
-            player.downward_acceleration = -5.0 * GRAVITY;
+            player.initiate_jump();
         }
-        if player.falling {
-            player.falling_stopwatch.tick(time.delta());
-            let fall =
-                player.downward_acceleration * player.falling_stopwatch.elapsed_secs().powf(2.0);
-            transform.translation.y -= fall;
-            if player.downward_acceleration < GRAVITY {
-                player.downward_acceleration += GRAVITY * player.falling_stopwatch.elapsed_secs().powf(2.0);
-            }
+
+        transform.translation.x += CAMERA_MOVE_SPEED;
+        let fall = player.fall(time.delta());
+        transform.translation.y -= fall;
+        let rotate_amount = player.rotate(fall);
+        if rotate_amount + transform.rotation.z > -MAX_ROTATE
+            && rotate_amount + transform.rotation.z < MAX_ROTATE
+        {
+            transform.rotation *= Quat::from_rotation_z(rotate_amount);
         }
     }
 }

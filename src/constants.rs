@@ -6,3 +6,5 @@ pub const CAMERA_MOVE_SPEED: f32 = 3.0;
 pub const ANIMATION_TIMER: f32 = 0.1;
 pub const SPRITE_SIZE: f32 = 100.0;
 pub const GRAVITY: f32 = 9.8;
+pub const FLAP_FORCE: f32 = -7.0;
+pub const MAX_ROTATE: f32 = 0.1;

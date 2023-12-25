@@ -27,7 +27,7 @@ fn main() {
                 .set(ImagePlugin::default_nearest()),
         )
         .add_plugins(
-            WorldInspectorPlugin::default().run_if(input_toggle_active(true, KeyCode::Escape)),
+            WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
         )
         .add_plugins(parallax::CameraPlugin)
         .add_plugins(player::PlayerPlugin)
