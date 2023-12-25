@@ -52,14 +52,14 @@ fn spawn_tower(
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
-                custom_size: Some(Vec2::new(TOWER_WIDTH, WINDOW_HEIGHT)),
+                custom_size: Some(Vec2::new(1.0, 1.0)),
                 anchor: Anchor::BottomLeft,
                 ..default()
             },
             texture: parent.asset.clone(),
             transform: Transform {
                 translation: Vec3::new(parent.spawn_distance, -WINDOW_HEIGHT / 2.0, 4.0),
-                scale: Vec3::new(1.0, 1.0, 1.0),
+                scale: Vec3::new(TOWER_WIDTH, WINDOW_HEIGHT/2., 1.0),
                 ..default()
             },
             ..default()

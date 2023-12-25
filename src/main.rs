@@ -39,6 +39,7 @@ fn main() {
         .add_plugins(tower::TowerPlugin)
         .add_systems(Update, start_game)
         .add_systems(Update, draw_rectangles)
+        .add_systems(Update, collision_detection)
         .run();
 }
 
@@ -52,6 +53,21 @@ pub enum GameState {
 fn start_game(mut state: ResMut<NextState<GameState>>, keyboard_input: Res<Input<KeyCode>>) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         state.set(GameState::Started);
+    }
+}
+
+fn collision_detection(
+    mut commands: Commands,
+    mut players: Query<(&GlobalTransform, &mut Sprite, &mut player::player::Player)>,
+    mut towers: Query<(Entity, &mut tower::Tower)>,
+) {
+    for (transform, mut sprite, mut player) in &mut players {
+        let player_coordinates = transform.translation();
+        if player_coordinates.y <= -WINDOW_HEIGHT / 2.
+            || player_coordinates.y >= (WINDOW_HEIGHT / 2.) - SPRITE_SIZE
+        {
+            sprite.color = Color::RED;
+        }
     }
 }
 
@@ -93,13 +109,12 @@ fn draw_rectangles(
     for (entity, transform) in &towers {
         commands.entity(entity).insert(Rectangle);
         let mut coordinates = transform.translation();
-        coordinates.z -= 1.;
-        coordinates.x += PLAYER_OFFSET;
+        coordinates.x += 70.;
         commands.spawn((
             Name::new("tower_rectangle"),
             MaterialMesh2dBundle {
                 mesh: meshes
-                    .add(shape::Quad::new(Vec2::new(10., 10.)).into())
+                    .add(shape::Quad::new(Vec2::new(100., WINDOW_HEIGHT)).into())
                     .into(),
                 material: materials.add(ColorMaterial::from(Color::LIME_GREEN)),
                 transform: Transform::from_translation(coordinates),
