@@ -11,5 +11,6 @@ pub const MAX_ROTATE: f32 = 0.1;
 pub const TOWER_GAP: f32 = 400.0;
 pub const PLAYER_OFFSET: f32 = -400.0;
 pub const TOWER_WIDTH: f32 = 150.0;
-pub const MAX_TOWER_SPAWN: usize = 5;
+pub const MAX_TOWER_SPAWN: usize = 10;
 pub const TOWER_TOP_COLLISION_OFFSET: f32 = 70.0;
+pub const VERTICAL_TOWER_GAP: f32 = 200.0;

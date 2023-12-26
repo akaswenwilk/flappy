@@ -47,25 +47,38 @@ fn spawn_tower(
         return;
     }
 
+    let base = -WINDOW_HEIGHT / 2.;
+
     commands.spawn((
         Name::new(format!("Tower {:?}", parent.spawn_distance)),
-        SpriteBundle {
-            sprite: Sprite {
-                custom_size: Some(Vec2::new(TOWER_WIDTH, WINDOW_HEIGHT)),
-                anchor: Anchor::CenterLeft,
-                ..default()
-            },
-            texture: parent.asset.clone(),
-            transform: Transform {
-                translation: Vec3::new(parent.spawn_distance, -WINDOW_HEIGHT / 2., 4.0),
-                scale: Vec3::new(1., 1., 1.),
-                ..default()
-            },
-            ..default()
-        },
+        tower_bundle(&parent, base, false),
+        Tower,
+    ));
+
+    commands.spawn((
+        Name::new(format!("Tower {:?}", parent.spawn_distance)),
+        tower_bundle(&parent, base + WINDOW_HEIGHT + VERTICAL_TOWER_GAP, true),
         Tower,
     ));
     parent.spawn_distance += TOWER_GAP;
+}
+
+fn tower_bundle(parent: &ResMut<TowerParent>, y_offset: f32, flip_y: bool) -> SpriteBundle {
+    SpriteBundle {
+        sprite: Sprite {
+            flip_y,
+            custom_size: Some(Vec2::new(TOWER_WIDTH, WINDOW_HEIGHT)),
+            anchor: Anchor::CenterLeft,
+            ..default()
+        },
+        texture: parent.asset.clone(),
+        transform: Transform {
+            translation: Vec3::new(parent.spawn_distance, y_offset, 4.0),
+            scale: Vec3::new(1., 1., 1.),
+            ..default()
+        },
+        ..default()
+    }
 }
 
 fn despawn_tower(
