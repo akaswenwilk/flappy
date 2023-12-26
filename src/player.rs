@@ -136,11 +136,19 @@ fn move_player(
 }
 
 fn animate_player(
+    mut commands: Commands,
     time: Res<Time>,
+    asset_server: Res<AssetServer>,
     mut query: Query<(&mut player::Player, &mut TextureAtlasSprite)>,
 ) {
     for (mut player, mut sprite) in &mut query {
         if player.flying {
+            if sprite.index == player.indices.first {
+                commands.spawn(AudioBundle {
+                    source: asset_server.load("wing-flap.mp3"),
+                    ..default()
+                });
+            }
             player.timer.tick(&time);
             if player.timer.just_finished() {
                 sprite.index = player.indices.next(sprite.index);
