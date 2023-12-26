@@ -118,14 +118,14 @@ fn move_player(
     input: Res<Input<KeyCode>>,
     mut query: Query<(&mut Transform, &mut player::Player)>,
 ) {
-    for (mut transform, mut player) in query.iter_mut() {
+    for (mut transform, mut player) in &mut query {
         if input.just_pressed(KeyCode::Space) {
             player.initiate_jump();
         }
 
         transform.translation.x += CAMERA_MOVE_SPEED;
-        let fall = player.fall(time.delta());
-        transform.translation.y -= fall;
+        let fall = player.fall(time.delta_seconds());
+        transform.translation.y += fall;
         let rotate_amount = player.rotate(fall);
         if rotate_amount + transform.rotation.z > -MAX_ROTATE
             && rotate_amount + transform.rotation.z < MAX_ROTATE

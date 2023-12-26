@@ -37,8 +37,7 @@ fn collision_detection(
         }
 
         if player_sprite.color == Color::RED {
-            state.set(GameState::Stopped);
-            info!("Game over!");
+            state.set(GameState::Finished);
         }
     }
 }

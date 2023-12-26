@@ -29,8 +29,10 @@ fn load_towers(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(parent);
 }
 
-#[derive(Component)]
-pub struct Tower;
+#[derive(Component, Default)]
+pub struct Tower {
+    pub passed: bool,
+}
 
 fn spawn_tower(
     time: Res<Time>,
@@ -53,13 +55,13 @@ fn spawn_tower(
     commands.spawn((
         Name::new(format!("Tower {:?}", parent.spawn_distance)),
         tower_bundle(&parent, base, false),
-        Tower,
+        Tower::default(),
     ));
 
     commands.spawn((
         Name::new(format!("Tower {:?}", parent.spawn_distance)),
         tower_bundle(&parent, base + WINDOW_HEIGHT + VERTICAL_TOWER_GAP, true),
-        Tower,
+        Tower::default(),
     ));
     parent.spawn_distance += TOWER_GAP;
 }

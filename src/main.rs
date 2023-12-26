@@ -1,12 +1,14 @@
+mod collision;
 mod constants;
 mod parallax;
 mod player;
+mod score;
 mod tower;
-mod collision;
+mod ui;
 
 use crate::constants::*;
 use bevy::input::common_conditions::input_toggle_active;
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 fn main() {
@@ -36,6 +38,8 @@ fn main() {
         .add_plugins(player::PlayerPlugin)
         .add_plugins(tower::TowerPlugin)
         .add_plugins(collision::CollisionPlugin)
+        .add_plugins(ui::UIPlugin)
+        .add_plugins(score::ScorePlugin)
         .add_systems(Update, start_game.run_if(in_state(GameState::Stopped)))
         .run();
 }
@@ -45,6 +49,7 @@ pub enum GameState {
     #[default]
     Stopped,
     Started,
+    Finished,
 }
 
 fn start_game(mut state: ResMut<NextState<GameState>>, keyboard_input: Res<Input<KeyCode>>) {
