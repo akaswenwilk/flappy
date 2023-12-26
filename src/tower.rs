@@ -52,7 +52,7 @@ fn spawn_tower(
         SpriteBundle {
             sprite: Sprite {
                 custom_size: Some(Vec2::new(TOWER_WIDTH, WINDOW_HEIGHT)),
-                //anchor: Anchor::BottomLeft,
+                anchor: Anchor::CenterLeft,
                 ..default()
             },
             texture: parent.asset.clone(),

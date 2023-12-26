@@ -47,12 +47,12 @@ fn collide_bottom_corner(player_coordinates: Vec3, tower_coordinates: Vec3) -> b
     player_coordinates.x + SPRITE_SIZE >= tower_coordinates.x
         && player_coordinates.x + SPRITE_SIZE <= tower_coordinates.x + TOWER_WIDTH
         && player_coordinates.y >= tower_coordinates.y - WINDOW_HEIGHT / 2.
-        && player_coordinates.y <= tower_coordinates.y + WINDOW_HEIGHT / 2.
+        && player_coordinates.y <= tower_coordinates.y + (WINDOW_HEIGHT / 2.) - TOWER_TOP_COLLISION_OFFSET
 }
 
 fn collide_top_corner(player_coordinates: Vec3, tower_coordinates: Vec3) -> bool {
     player_coordinates.x + SPRITE_SIZE >= tower_coordinates.x
         && player_coordinates.x + SPRITE_SIZE <= tower_coordinates.x + TOWER_WIDTH
         && player_coordinates.y + SPRITE_SIZE >= tower_coordinates.y - WINDOW_HEIGHT / 2.
-        && player_coordinates.y + SPRITE_SIZE <= tower_coordinates.y + WINDOW_HEIGHT / 2.
+        && player_coordinates.y + SPRITE_SIZE <= tower_coordinates.y + WINDOW_HEIGHT / 2. - TOWER_TOP_COLLISION_OFFSET
 }
