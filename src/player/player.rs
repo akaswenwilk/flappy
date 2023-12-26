@@ -1,7 +1,6 @@
 use crate::constants::*;
 use crate::player::animation;
 use bevy::prelude::*;
-use bevy::utils::Duration;
 
 #[derive(Component)]
 pub struct Player {
@@ -43,5 +42,9 @@ impl Player {
 
     pub fn rotate(&mut self, fall_amount: f32) -> f32 {
         fall_amount * 0.003
+    }
+
+    pub fn reset(&mut self) {
+        self.velocity = 0.0;
     }
 }

@@ -41,6 +41,7 @@ fn main() {
         .add_plugins(ui::UIPlugin)
         .add_plugins(score::ScorePlugin)
         .add_systems(Update, start_game.run_if(in_state(GameState::Stopped)))
+        .add_systems(Update, restart_game.run_if(in_state(GameState::Finished)))
         .run();
 }
 
@@ -54,6 +55,36 @@ pub enum GameState {
 
 fn start_game(mut state: ResMut<NextState<GameState>>, keyboard_input: Res<Input<KeyCode>>) {
     if keyboard_input.just_pressed(KeyCode::Space) {
+        state.set(GameState::Started);
+    }
+}
+
+fn restart_game(
+    mut commands: Commands,
+    mut state: ResMut<NextState<GameState>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    mut score: ResMut<score::Score>,
+    towers: Query<Entity, With<tower::Tower>>,
+    mut player: Query<(
+        &mut Transform,
+        &mut TextureAtlasSprite,
+        &mut player::player::Player,
+    )>,
+) {
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        state.set(GameState::Started);
+        score.value = 0;
+
+        for tower in &towers {
+            commands.entity(tower).despawn_recursive();
+        }
+
+        for (mut transform, mut sprite, mut player) in &mut player {
+            player.reset();
+            sprite.color = Color::WHITE;
+            transform.translation.y = 0.;
+        }
+
         state.set(GameState::Started);
     }
 }
