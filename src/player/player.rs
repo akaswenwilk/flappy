@@ -35,7 +35,6 @@ impl Default for Player {
 impl Player {
     pub fn initiate_jump(&mut self) {
         self.flying = true;
-        self.falling = true;
         self.falling_stopwatch.reset();
         self.downward_acceleration = FLAP_FORCE * GRAVITY;
     }

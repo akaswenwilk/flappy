@@ -1,7 +1,7 @@
 mod animation;
 pub mod player;
 
-use crate::constants::*;
+use crate::{constants::*, *};
 use bevy::{asset::LoadedFolder, prelude::*, sprite::Anchor};
 
 pub struct PlayerPlugin;
@@ -12,7 +12,11 @@ impl Plugin for PlayerPlugin {
             .add_systems(OnEnter(PlayerState::Loading), load_player_assets)
             .add_systems(Update, check_loaded.run_if(in_state(PlayerState::Loading)))
             .add_systems(OnEnter(PlayerState::Ready), generate_player)
-            .add_systems(Update, (move_player, animate_player));
+            .add_systems(OnEnter(GameState::Started), start_falling)
+            .add_systems(
+                Update,
+                (move_player, animate_player).run_if(in_state(GameState::Started)),
+            );
     }
 }
 
@@ -79,6 +83,7 @@ fn generate_player(
     let timer = animation::AnimationTimer::new(ANIMATION_TIMER);
 
     commands.spawn((
+        Name::new("Player"),
         SpriteSheetBundle {
             texture_atlas: atlas_handle,
             sprite: TextureAtlasSprite {
@@ -87,7 +92,11 @@ fn generate_player(
                 custom_size: Some(Vec2::new(SPRITE_SIZE, SPRITE_SIZE)),
                 ..default()
             },
-            transform: Transform::from_xyz(PLAYER_OFFSET, 0.0, 3.0),
+            transform: Transform {
+                translation: Vec3::new(PLAYER_OFFSET, 0.0, 4.0),
+                scale: Vec3::new(1., 1., 1.),
+                ..default()
+            },
             ..default()
         },
         player::Player {
@@ -96,6 +105,12 @@ fn generate_player(
             ..default()
         },
     ));
+}
+
+fn start_falling(mut query: Query<&mut player::Player>) {
+    for mut player in query.iter_mut() {
+        player.falling = true;
+    }
 }
 
 fn move_player(
