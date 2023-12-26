@@ -16,3 +16,4 @@ opt-level = 3
 bevy = { version = "0.12.0", features = ["dynamic_linking"] }
 bevy-inspector-egui = "0.21.0"
 bevy-parallax = "0.7.0"
+rand = "0.8.5"

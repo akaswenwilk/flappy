@@ -1,5 +1,6 @@
 use crate::{constants::*, GameState};
 use bevy::{prelude::*, sprite::Anchor, time::Stopwatch};
+use rand::Rng;
 
 pub struct TowerPlugin;
 
@@ -47,7 +48,7 @@ fn spawn_tower(
         return;
     }
 
-    let base = -WINDOW_HEIGHT / 2.;
+    let base = get_tower_y_offset();
 
     commands.spawn((
         Name::new(format!("Tower {:?}", parent.spawn_distance)),
@@ -61,6 +62,10 @@ fn spawn_tower(
         Tower,
     ));
     parent.spawn_distance += TOWER_GAP;
+}
+
+fn get_tower_y_offset() -> f32 {
+    rand::thread_rng().gen_range(-WINDOW_HEIGHT..-VERTICAL_TOWER_GAP)
 }
 
 fn tower_bundle(parent: &ResMut<TowerParent>, y_offset: f32, flip_y: bool) -> SpriteBundle {
